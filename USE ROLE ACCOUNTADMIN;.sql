@@ -188,4 +188,4 @@ OR LENGTH(Receiver) <> 10
 SELECT*FROM STAGING.INVALID_PHONE;    
 
 
-
+--dashboard in file #Dashboardhcl.png
