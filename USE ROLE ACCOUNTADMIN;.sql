@@ -189,3 +189,40 @@ SELECT*FROM STAGING.INVALID_PHONE;
 
 
 --dashboard in file #Dashboardhcl.png
+
+
+SELECT 
+    Caller,
+    SUM(Duration) AS TotalDuration
+FROM MART.FACT_CDR
+GROUP BY Caller
+HAVING SUM(Duration) > 1000;
+
+CREATE OR REPLACE NOTIFICATION INTEGRATION EMAIL_INT
+TYPE = EMAIL
+ENABLED = TRUE
+ALLOWED_RECIPIENTS(
+--EMAILS
+);
+
+CALL SYSTEM$SEND_EMAIL(
+    'EMAIL_INT',
+    'EMAILS',
+    'High Usage Alert',
+    'Some users have exceeded call usage limit.'
+);
+
+CALL SYSTEM$SEND_EMAIL(
+    'EMAIL_INT',
+    'EMAILS',
+    'High Usage Alert',
+    (
+        SELECT LISTAGG(
+            'User: ' || Caller || ' Duration: ' || SUM(Duration),
+            '\n'
+        )
+        FROM MART.FACT_CDR
+        GROUP BY Caller
+        HAVING SUM(Duration) > 1000
+    )
+);
